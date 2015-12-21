@@ -65,3 +65,4 @@ class MinecraftClient(MinecraftClient):
                  }
                  ** kwargs):
         super().__init__(url=url, **kwargs)
+
