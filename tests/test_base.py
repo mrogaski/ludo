@@ -27,6 +27,8 @@ SOFTWARE.
 from .context import ludo
 
 
-def test_success():
-    assert True
+def test_client():
+    url = 'https://api.example.com/'
+    c = ludo.Client(url)
+    assert c._url == url
 

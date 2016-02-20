@@ -59,6 +59,8 @@ setup(
     ],
     keywords='world-of-warcraft eve-online minecraft api',
     packages=find_packages(exclude=['docs', 'tests']),
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
     install_requires=['future', 'requests'],
     extras_require={
         'dev': ['check-manifest'],
