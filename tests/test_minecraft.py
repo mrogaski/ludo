@@ -25,8 +25,9 @@ SOFTWARE.
 """
 
 from .context import ludo
+from .context import minecraft
 
 def test_status():
-    c = ludo.minecraft.Client()
-    assert c._url == 'https://status.mojang.com/check'
+    c = minecraft.Client()
+    assert  isinstance(c, ludo.Client)
 
