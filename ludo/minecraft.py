@@ -27,6 +27,9 @@
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 from builtins import *
+import json
+
+from requests import Request
 
 import ludo
 
@@ -34,5 +37,8 @@ import ludo
 class Client(ludo.Client):
     """Minecraft API client."""
 
-    
+    def status(self, url='https://status.mojang.com/check'):
+        request = Request('GET', url)
+        response = self._query(request)
+        return json.loads(response)
 
