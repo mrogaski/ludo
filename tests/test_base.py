@@ -24,7 +24,7 @@ SOFTWARE.
 
 """
 
-from .context import ludo
+import ludo
 
 
 def test_success():
