@@ -7,7 +7,7 @@ python:
 before_install:
     - pip install pytest pytest-cov
 install:
-    - pip install --user -r requirements.txt
+    - pip install -r requirements.txt
 script:
     - py.test
 
