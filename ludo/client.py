@@ -2,7 +2,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2015 Mark Rogaski
+# Copyright (c) 2015-2016 Mark Rogaski
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -29,12 +29,23 @@ from __future__ import (absolute_import, division,
 from builtins import *
 
 import requests
+from binhex import REASONABLY_LARGE
 
+
+class APIError(Exception):
+    def __init__(self, method, url, status_code, reason):
+        self.method = method
+        self.url = url
+        self.status_code = status_code
+        self.reason = reason
+        message = '%s %s %s %s' % (method, url, status_code, reason)
+        super().__init__(message)
+        
 
 class Client(object):
     """Base class for an API client."""
 
-    def __init__(self, url=None, cache=None, timeout=10, obj=None):
+    def __init__(self, url=None, cache=None, proxy=None, timeout=10, obj=None):
         self._url = url
         self._cache = cache
         self._proxy = proxy
@@ -46,23 +57,10 @@ class Client(object):
         prepped = s.prepare_request(req)
         r = s.send(prepped, timeout=self._timeout, **kwargs)
         if r.status_code != 200:
-            raise APIError('%s %s %s %s' % (prepped.method,
-                                            prepped.url,
-                                            r.status_code,
-                                            r.reason))
+            raise APIError(prepped.method,
+                           prepped.url,
+                           r.status_code,
+                           r.reason)
         else:
             return r.json()
-
-
-class MinecraftClient(MinecraftClient):
-    """Minecraft API client."""
-
-    def __init__(self,
-                 url={
-                     'api': 'https://api.mojang.com',
-                     'status': 'https://status.mojang.com',
-                     'session': 'https://sessionserver.mojang.com',
-                 }
-                 ** kwargs):
-        super().__init__(url=url, **kwargs)
 
