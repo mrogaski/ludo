@@ -40,5 +40,5 @@ class Client(ludo.Client):
     def status(self, url='https://status.mojang.com/check'):
         request = Request('GET', url)
         response = self._query(request)
-        return json.loads(response)
+        return { k: v for d in response for k, v in d.items() }
 

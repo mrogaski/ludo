@@ -24,10 +24,39 @@ SOFTWARE.
 
 """
 
+from json import loads
+
 from .context import ludo
 from .context import minecraft
 
-def test_status():
+def test_init():
     c = minecraft.Client()
     assert  isinstance(c, ludo.Client)
+
+def test_status(monkeypatch):
+    def query(self, request, **kwargs):
+        return loads("""[
+                            {"minecraft.net":"green"},
+                            {"session.minecraft.net":"green"},
+                            {"account.mojang.com":"green"},
+                            {"auth.mojang.com":"green"},
+                            {"skins.minecraft.net":"green"},
+                            {"authserver.mojang.com":"green"},
+                            {"sessionserver.mojang.com":"green"},
+                            {"api.mojang.com":"green"},
+                            {"textures.minecraft.net":"green"}
+                        ]""") 
+
+    monkeypatch.setattr('ludo.Client._query', query)
+    c = minecraft.Client()
+    r = c.status()
+    assert r['minecraft.net'] == 'green'
+    assert r['session.minecraft.net'] == 'green'
+    assert r['account.mojang.com'] == 'green'
+    assert r['auth.mojang.com'] == 'green'
+    assert r['skins.minecraft.net'] == 'green'
+    assert r['authserver.mojang.com'] == 'green'
+    assert r['sessionserver.mojang.com'] == 'green'
+    assert r['api.mojang.com'] == 'green'
+    assert r['textures.minecraft.net'] == 'green'
 
