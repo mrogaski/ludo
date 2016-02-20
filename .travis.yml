@@ -6,6 +6,8 @@ python:
     - "3.5"
 before_install:
     - pip install pytest pytest-cov
+install:
+    - pip install --user -r requirements.txt
 script:
     - py.test
 
