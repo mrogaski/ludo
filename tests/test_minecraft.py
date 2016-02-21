@@ -24,7 +24,7 @@ SOFTWARE.
 
 """
 
-from json import loads
+import re
 
 from .context import ludo
 from .context import minecraft
@@ -35,17 +35,15 @@ def test_init():
 
 def test_status(monkeypatch):
     def query(self, request, **kwargs):
-        return loads("""[
-                            {"minecraft.net":"green"},
-                            {"session.minecraft.net":"green"},
-                            {"account.mojang.com":"green"},
-                            {"auth.mojang.com":"green"},
-                            {"skins.minecraft.net":"green"},
-                            {"authserver.mojang.com":"green"},
-                            {"sessionserver.mojang.com":"green"},
-                            {"api.mojang.com":"green"},
-                            {"textures.minecraft.net":"green"}
-                        ]""") 
+        return [{"minecraft.net":"green"},
+                {"session.minecraft.net":"green"},
+                {"account.mojang.com":"green"},
+                {"auth.mojang.com":"green"},
+                {"skins.minecraft.net":"green"},
+                {"authserver.mojang.com":"green"},
+                {"sessionserver.mojang.com":"green"},
+                {"api.mojang.com":"green"},
+                {"textures.minecraft.net":"green"}] 
 
     monkeypatch.setattr('ludo.Client._query', query)
     c = minecraft.Client()
@@ -60,3 +58,24 @@ def test_status(monkeypatch):
     assert r['api.mojang.com'] == 'green'
     assert r['textures.minecraft.net'] == 'green'
 
+def test_user(monkeypatch):
+    def query(self, request, **kwargs):
+        data = [{"id":"77cc85ae388a46eca5359e2ffef71b29","name":"DanTDM"},
+                {"id":"11401975fcc242c7a4d15afa0d1d37cd","name":"notaplayer","legacy": True,"demo": True},
+                {"id":"5c3f6dd7babe4ebea4d809897c45cd29","name":"stigg"}]
+        users = map(lambda x: x.lower, request.json)
+        return [d for d in data if d['name'].lower in users]
+        
+    #monkeypatch.setattr('ludo.Client._query', query)
+    c = minecraft.Client()
+    r = c.user(['stigg'])
+    assert r['stigg']['name'] == 'stigg'
+    assert r['stigg']['id'] == '5c3f6dd7babe4ebea4d809897c45cd29'
+    r = c.user(['Stigg', 'dantdm', 'notaplayer'])
+    assert r['Stigg']['name'] == 'stigg'
+    assert r['Stigg']['id'] == '5c3f6dd7babe4ebea4d809897c45cd29'
+    assert r['dantdm']['id'] == '77cc85ae388a46eca5359e2ffef71b29'
+    assert r['notaplayer']['legacy'] == True
+    
+    
+    

@@ -42,3 +42,10 @@ class Client(ludo.Client):
         response = self._query(request)
         return { k: v for d in response for k, v in d.items() }
 
+    def user(self, name_list, url='https://api.mojang.com/profiles/minecraft'):
+        request = Request('POST', url, json=name_list)
+        response = self._query(request)
+        lookup = {d['name'].lower(): d for d in response}
+        return {k: lookup[k.lower()] for k in name_list}
+    
+    
